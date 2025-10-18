@@ -163,10 +163,6 @@ pubmed_20251018_143022.meta.txt     # Search metadata
 - `doi` - DOI
 - `authors` - Author list (semicolon-separated)
 - `keywords` - Keywords (semicolon-separated)
-- `conclusions` - Conclusions
-- `methods` - Methods
-- `results` - Results
-- `copyrights` - Copyright information
 
 ### JSON format
 

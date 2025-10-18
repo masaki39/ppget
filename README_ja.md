@@ -162,10 +162,6 @@ pubmed_20251018_143022.meta.json    # 検索メタデータ
 - `doi` - DOI
 - `authors` - 著者リスト（セミコロン区切り）
 - `keywords` - キーワード（セミコロン区切り）
-- `conclusions` - 結論
-- `methods` - 方法
-- `results` - 結果
-- `copyrights` - 著作権情報
 
 ### JSON形式
 
