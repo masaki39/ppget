@@ -1,70 +1,273 @@
-# llm-reviewer
+# pget
 
-PubMedから文献を検索してJSON形式でダウンロードするツールです。
+**A simple CLI tool to easily download PubMed articles**
 
-## インストール
+[日本語版README](README_ja.md) | [English](README.md)
+
+`pget` is a command-line tool for searching and downloading literature data from PubMed. Unlike [EDirect](https://www.ncbi.nlm.nih.gov/books/NBK179288/), which requires complex setup, **you can start using it immediately**.
+
+## ✨ Features
+
+- 🚀 **No installation required** - Run instantly with `uvx`
+- 📝 **CSV/JSON support** - Easy to use in spreadsheets or programs
+- 🔍 **Flexible search** - Full support for PubMed search syntax (AND, OR, MeSH, etc.)
+- 📊 **Automatic metadata** - Automatically records search queries and timestamps
+- 🎯 **Simple API** - Clear and intuitive options
+
+## 🚀 Quick Start
+
+### Run without installation (Recommended)
+
+If you have [uv](https://github.com/astral-sh/uv) installed, **you can run it instantly without installation**:
 
 ```bash
-uv sync
+# Basic usage
+uvx pget "machine learning AND medicine"
+
+# Specify number of results
+uvx pget "COVID-19 vaccine" -l 50
+
+# Save as JSON
+uvx pget "cancer immunotherapy" -f json
 ```
 
-## 使い方
+### Install and use
 
-uv環境では以下のように実行します:
+For frequent use, you can install it:
 
 ```bash
-# uv run で実行
-uv run python main.py "machine learning AND medicine"
+# Install with pip
+pip install pget
 
-# または仮想環境を有効化してから実行
-source .venv/bin/activate  # macOS/Linux
-python main.py "machine learning AND medicine"
+# Install with uv
+uv tool install pget
+
+# Run
+pget "your search query"
 ```
 
-オプション付き:
+## 📖 Usage
+
+### Basic usage
 
 ```bash
-# 最大100件取得（デフォルト）
-uv run python main.py "COVID-19 treatment" -n 100
+# Simple search (CSV format by default, up to 100 results)
+pget "diabetes treatment"
 
-# 出力先ディレクトリを指定
-uv run python main.py "cancer immunotherapy" -o ./data
-
-# 両方のオプションを使用
-uv run python main.py "deep learning healthcare" -n 50 -o ./output
+# Example output:
+# Searching PubMed...
+# Query: 'diabetes treatment'
+# Max results: 100
+# ✓ Found 100 articles
+# ✓ Saved 100 articles to pubmed_20251018_143022.csv
+# ✓ Metadata saved to pubmed_20251018_143022.meta.txt
 ```
 
-## オプション
-
-- `query`: 検索クエリ（必須）
-  - PubMed検索構文をサポート（AND, OR, NOT など）
-- `-n, --max-results`: 最大取得件数（デフォルト: 100）
-- `-o, --output-dir`: 出力ディレクトリ（デフォルト: カレントディレクトリ）
-
-## 出力形式
-
-JSONファイルは以下の形式で保存されます:
-- ファイル名: `pubmed_{検索クエリ}_{タイムスタンプ}.json`
-- 各文献には以下の情報が含まれます:
-  - `pubmed_id`: PubMed ID
-  - `title`: タイトル
-  - `abstract`: 要旨
-  - `keywords`: キーワード
-  - `journal`: ジャーナル名
-  - `publication_date`: 出版日
-  - `authors`: 著者リスト
-  - `doi`: DOI
-  - `conclusions`: 結論
-  - `methods`: 方法
-  - `results`: 結果
-  - `copyrights`: 著作権情報
-
-## 例
+### Options
 
 ```bash
-# AI医療に関する文献を50件取得
-uv run python main.py "artificial intelligence AND healthcare" -n 50
+pget [query] [options]
 
-# 2024年以降のCOVID-19研究を取得
-uv run python main.py "COVID-19 AND 2024[PDAT]" -n 100
+Required:
+  query                 Search query
+
+Options:
+  -l, --limit          Maximum number of results (default: 100)
+  -o, --output         Output file or directory
+  -f, --format         Output format: csv or json (default: csv)
+  -e, --email          Email address (for API rate limit relaxation)
+  -q, --quiet          Suppress progress messages (errors only)
+  -v, --version        Show version and exit
+  -h, --help           Show help message
+```
+
+### Advanced usage
+
+#### 1. Change number of results
+
+```bash
+# Retrieve up to 200 results
+pget "machine learning healthcare" -l 200
+```
+
+#### 2. Specify output format
+
+```bash
+# Save as JSON
+pget "spine surgery" -f json
+
+# Default is CSV (can be opened in Excel)
+pget "orthopedics" -f csv
+```
+
+#### 3. Specify filename
+
+```bash
+# Specify file path directly
+pget "cancer research" -o results/cancer_papers.csv
+
+# Specify directory (filename is auto-generated)
+pget "neuroscience" -o ./data/
+
+# Extension determines format
+pget "cardiology" -o heart_disease.json
+```
+
+#### 4. Specify email address (API rate limit relaxation)
+
+NCBI's API has relaxed limits when you provide an email address:
+
+```bash
+pget "genomics" -e your.email@example.com -l 500
+```
+
+#### 5. Use PubMed search syntax
+
+```bash
+# AND search
+pget "machine learning AND radiology"
+
+# OR search
+pget "COVID-19 OR SARS-CoV-2"
+
+# MeSH term search
+pget "Diabetes Mellitus[MeSH] AND Drug Therapy[MeSH]"
+
+# Filter by year
+pget "cancer immunotherapy AND 2024[PDAT]"
+
+# Search by author
+pget "Smith J[Author]"
+
+# Complex search
+pget "(machine learning OR deep learning) AND (radiology OR imaging) AND 2023:2024[PDAT]"
+```
+
+## 📁 Output Format
+
+### CSV format (default)
+
+Easy to open in spreadsheets. A metadata file (`.meta.txt`) is also generated.
+
+```
+pubmed_20251018_143022.csv          # Article data
+pubmed_20251018_143022.meta.txt     # Search metadata
+```
+
+**CSV columns:**
+- `pubmed_id` - PubMed ID
+- `title` - Title
+- `abstract` - Abstract
+- `journal` - Journal name
+- `publication_date` - Publication date
+- `doi` - DOI
+- `authors` - Author list (semicolon-separated)
+- `keywords` - Keywords (semicolon-separated)
+- `conclusions` - Conclusions
+- `methods` - Methods
+- `results` - Results
+- `copyrights` - Copyright information
+
+### JSON format
+
+Easy to process programmatically.
+
+```json
+[
+  {
+    "pubmed_id": "12345678",
+    "title": "...",
+    "abstract": "...",
+    ...
+  }
+]
+```
+
+**Metadata file (.meta.txt):**
+```
+Query: machine learning
+Search Date: 2025-10-18 14:30:22
+Retrieved Results: 100
+Data File: pubmed_20251018_143022.json
+```
+
+## 🆚 Comparison with EDirect
+
+| Feature | pget | EDirect |
+|---------|------|---------|
+| Installation | Not required (`uvx` instant run) | Complex setup required |
+| Ease of use | Single command | Multiple command combinations |
+| Output format | CSV/JSON | XML/Text |
+| Metadata | Automatic | Manual management |
+| Learning curve | Low | High |
+
+### EDirect example (complex)
+
+```bash
+# Search with EDirect (multiple steps required)
+esearch -db pubmed -query "machine learning" | \
+efetch -format abstract | \
+xtract -pattern PubmedArticle -element MedlineCitation/PMID,ArticleTitle
+```
+
+### pget example (simple)
+
+```bash
+# With pget, just one command
+pget "machine learning"
+```
+
+## 💡 Use Cases
+
+### Collecting research papers
+
+```bash
+# Collect latest papers on a specific topic
+pget "CRISPR gene editing" -l 100 -o crispr_papers.csv
+
+# Run multiple searches at once
+pget "diabetes treatment 2024[PDAT]" -o diabetes_2024.csv
+pget "cancer immunotherapy 2024[PDAT]" -o cancer_2024.csv
+```
+
+### For data analysis
+
+```bash
+# Retrieve in JSON format and analyze with Python
+pget "artificial intelligence healthcare" -f json -l 500 -o ai_health.json
+
+# Example Python code to read
+import json
+with open('ai_health.json') as f:
+    data = json.load(f)
+    # Analysis...
+```
+
+### Literature review
+
+```bash
+# Retrieve in CSV and manage in Excel
+pget "systematic review AND meta-analysis" -l 200 -o reviews.csv
+
+# → Open in Excel and review titles and abstracts
+```
+
+## 🤝 Contributing
+
+Bug reports and feature requests are welcome at [Issues](https://github.com/masaki39/pget/issues).
+
+## 📄 License
+
+MIT License - See [LICENSE](LICENSE) for details.
+
+## 🙏 Acknowledgments
+
+This tool uses [pymed-paperscraper](https://github.com/nils-herrmann/pymed-paperscraper).
+
+---
+
+**Start searching PubMed easily and quickly!**
+
+```bash
+uvx pget "your research topic"
 ```

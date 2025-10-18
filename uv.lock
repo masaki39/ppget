@@ -87,9 +87,9 @@ wheels = [
 ]
 
 [[package]]
-name = "llm-reviewer"
+name = "pget"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "pymed-paperscraper" },
 ]
