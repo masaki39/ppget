@@ -30,6 +30,11 @@ def search_pubmed(query: str, max_results: int = 100, email: str = "anonymous@ex
 
     articles = []
     for article in results:
+        # Extract DOI - pymed-paperscraper has a bug where it includes reference DOIs
+        # We only want the first DOI which is the article's own DOI
+        doi_raw = getattr(article, 'doi', None)
+        doi = doi_raw.split('\n')[0] if doi_raw else None
+
         # Use getattr with defaults to handle missing attributes
         article_data = {
             "pubmed_id": getattr(article, 'pubmed_id', None),
@@ -42,7 +47,7 @@ def search_pubmed(query: str, max_results: int = 100, email: str = "anonymous@ex
                 {"firstname": author.get("firstname"), "lastname": author.get("lastname")}
                 for author in (getattr(article, 'authors', None) or [])
             ],
-            "doi": getattr(article, 'doi', None),
+            "doi": doi,
             "conclusions": getattr(article, 'conclusions', None),
             "methods": getattr(article, 'methods', None),
             "results": getattr(article, 'results', None),
