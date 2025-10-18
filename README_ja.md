@@ -1,10 +1,10 @@
-# pget
+# ppget
 
 **PubMed文献を簡単にダウンロードできるシンプルなCLIツール**
 
 [日本語版README](README_ja.md) | [English](README.md)
 
-`pget` は、PubMedから文献データを検索・ダウンロードするためのコマンドラインツールです。
+`ppget` は、PubMedから文献データを検索・ダウンロードするためのコマンドラインツールです。
 [EDirect](https://www.ncbi.nlm.nih.gov/books/NBK179288/)のような複雑な設定は不要で、**すぐに使い始められます**。
 
 ## ✨ 特徴
@@ -23,13 +23,13 @@
 
 ```bash
 # 基本的な使い方
-uvx pget "machine learning AND medicine"
+uvx ppget "machine learning AND medicine"
 
 # 取得件数を指定
-uvx pget "COVID-19 vaccine" -l 50
+uvx ppget "COVID-19 vaccine" -l 50
 
 # JSON形式で保存
-uvx pget "cancer immunotherapy" -f json
+uvx ppget "cancer immunotherapy" -f json
 ```
 
 ### インストールして使う
@@ -38,13 +38,13 @@ uvx pget "cancer immunotherapy" -f json
 
 ```bash
 # pipでインストール
-pip install pget
+pip install ppget
 
 # uvでインストール
-uv tool install pget
+uv tool install ppget
 
 # 実行
-pget "your search query"
+ppget "your search query"
 ```
 
 ## 📖 使い方
@@ -53,7 +53,7 @@ pget "your search query"
 
 ```bash
 # シンプルな検索（デフォルトでCSV形式、100件まで）
-pget "diabetes treatment"
+ppget "diabetes treatment"
 
 # 検索結果の例：
 # Searching PubMed...
@@ -67,7 +67,7 @@ pget "diabetes treatment"
 ### オプション一覧
 
 ```bash
-pget [検索クエリ] [オプション]
+ppget [検索クエリ] [オプション]
 
 必須引数:
   query                 検索クエリ
@@ -86,30 +86,30 @@ pget [検索クエリ] [オプション]
 
 ```bash
 # 200件まで取得
-pget "machine learning healthcare" -l 200
+ppget "machine learning healthcare" -l 200
 ```
 
 #### 2. 出力形式を指定
 
 ```bash
 # JSON形式で保存
-pget "spine surgery" -f json
+ppget "spine surgery" -f json
 
 # デフォルトはCSV形式（Excelで開ける）
-pget "orthopedics" -f csv
+ppget "orthopedics" -f csv
 ```
 
 #### 3. ファイル名を指定
 
 ```bash
 # ファイルパスを直接指定
-pget "cancer research" -o results/cancer_papers.csv
+ppget "cancer research" -o results/cancer_papers.csv
 
 # ディレクトリを指定（ファイル名は自動生成）
-pget "neuroscience" -o ./data/
+ppget "neuroscience" -o ./data/
 
 # 拡張子で形式も指定できる
-pget "cardiology" -o heart_disease.json
+ppget "cardiology" -o heart_disease.json
 ```
 
 #### 4. メールアドレスを指定（API制限緩和）
@@ -117,29 +117,29 @@ pget "cardiology" -o heart_disease.json
 NCBIのAPIは、メールアドレスを指定すると制限が緩和されます：
 
 ```bash
-pget "genomics" -e your.email@example.com -l 500
+ppget "genomics" -e your.email@example.com -l 500
 ```
 
 #### 5. PubMed検索構文を活用
 
 ```bash
 # AND検索
-pget "machine learning AND radiology"
+ppget "machine learning AND radiology"
 
 # OR検索
-pget "COVID-19 OR SARS-CoV-2"
+ppget "COVID-19 OR SARS-CoV-2"
 
 # MeSHタームで検索
-pget "Diabetes Mellitus[MeSH] AND Drug Therapy[MeSH]"
+ppget "Diabetes Mellitus[MeSH] AND Drug Therapy[MeSH]"
 
 # 年度で絞り込み
-pget "cancer immunotherapy AND 2024[PDAT]"
+ppget "cancer immunotherapy AND 2024[PDAT]"
 
 # 著者名で検索
-pget "Smith J[Author]"
+ppget "Smith J[Author]"
 
 # 複雑な検索
-pget "(machine learning OR deep learning) AND (radiology OR imaging) AND 2023:2024[PDAT]"
+ppget "(machine learning OR deep learning) AND (radiology OR imaging) AND 2023:2024[PDAT]"
 ```
 
 ## 📁 出力形式
@@ -191,7 +191,7 @@ pubmed_20251018_143022.meta.json    # 検索メタデータ
 
 ## 🆚 EDirectとの比較
 
-| 特徴 | pget | EDirect |
+| 特徴 | ppget | EDirect |
 |------|------|---------|
 | インストール | 不要（`uvx`で即実行） | 複雑なセットアップが必要 |
 | 使いやすさ | 1コマンドで完結 | 複数コマンドの組み合わせ |
@@ -208,11 +208,11 @@ efetch -format abstract | \
 xtract -pattern PubmedArticle -element MedlineCitation/PMID,ArticleTitle
 ```
 
-### pgetの例（シンプル）
+### ppgetの例（シンプル）
 
 ```bash
-# pgetなら1コマンド
-pget "machine learning"
+# ppgetなら1コマンド
+ppget "machine learning"
 ```
 
 ## 💡 使用例
@@ -221,18 +221,18 @@ pget "machine learning"
 
 ```bash
 # 特定のトピックの最新論文を収集
-pget "CRISPR gene editing" -l 100 -o crispr_papers.csv
+ppget "CRISPR gene editing" -l 100 -o crispr_papers.csv
 
 # 複数の検索を一度に実行
-pget "diabetes treatment 2024[PDAT]" -o diabetes_2024.csv
-pget "cancer immunotherapy 2024[PDAT]" -o cancer_2024.csv
+ppget "diabetes treatment 2024[PDAT]" -o diabetes_2024.csv
+ppget "cancer immunotherapy 2024[PDAT]" -o cancer_2024.csv
 ```
 
 ### データ分析用
 
 ```bash
 # JSON形式で取得してPythonで分析
-pget "artificial intelligence healthcare" -f json -l 500 -o ai_health.json
+ppget "artificial intelligence healthcare" -f json -l 500 -o ai_health.json
 
 # Pythonでの読み込み例
 import json
@@ -246,14 +246,14 @@ with open('ai_health.json') as f:
 
 ```bash
 # CSVで取得してExcelで管理
-pget "systematic review AND meta-analysis" -l 200 -o reviews.csv
+ppget "systematic review AND meta-analysis" -l 200 -o reviews.csv
 
 # → Excelで開いて、タイトルやアブストラクトをレビュー
 ```
 
 ## 🤝 貢献
 
-バグ報告や機能リクエストは [Issues](https://github.com/masaki39/pget/issues) へお願いします。
+バグ報告や機能リクエストは [Issues](https://github.com/masaki39/ppget/issues) へお願いします。
 
 ## 📄 ライセンス
 
@@ -268,5 +268,5 @@ MIT License - 詳細は [LICENSE](LICENSE) をご覧ください。
 **簡単に、すぐに、PubMed検索を始めましょう！**
 
 ```bash
-uvx pget "your research topic"
+uvx ppget "your research topic"
 ```

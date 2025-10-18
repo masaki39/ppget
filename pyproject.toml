@@ -1,5 +1,5 @@
 [project]
-name = "pget"
+name = "ppget"
 version = "0.1.0"
 description = "A simple CLI tool to download PubMed articles without the complexity of EDirect"
 readme = "README.md"
@@ -33,12 +33,12 @@ dependencies = [
 ]
 
 [project.scripts]
-pget = "pget.cli:main"
+ppget = "ppget.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/masaki39/pget"
-Repository = "https://github.com/masaki39/pget"
-Issues = "https://github.com/masaki39/pget/issues"
+Homepage = "https://github.com/masaki39/ppget"
+Repository = "https://github.com/masaki39/ppget"
+Issues = "https://github.com/masaki39/ppget/issues"
 
 [build-system]
 requires = ["hatchling"]

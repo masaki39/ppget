@@ -214,7 +214,7 @@ def determine_output_path(output_arg: str | None, format: str) -> Path:
 
 
 def main():
-    from pget import __version__
+    from ppget import __version__
 
     parser = argparse.ArgumentParser(
         description="A simple CLI tool to download PubMed articles"

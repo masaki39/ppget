@@ -1,10 +1,10 @@
-# pget
+# ppget
 
 **A simple CLI tool to easily download PubMed articles**
 
 [日本語版README](README_ja.md) | [English](README.md)
 
-`pget` is a command-line tool for searching and downloading literature data from PubMed. Unlike [EDirect](https://www.ncbi.nlm.nih.gov/books/NBK179288/), which requires complex setup, **you can start using it immediately**.
+`ppget` is a command-line tool for searching and downloading literature data from PubMed. Unlike [EDirect](https://www.ncbi.nlm.nih.gov/books/NBK179288/), which requires complex setup, **you can start using it immediately**.
 
 ## ✨ Features
 
@@ -22,13 +22,13 @@ If you have [uv](https://github.com/astral-sh/uv) installed, **you can run it in
 
 ```bash
 # Basic usage
-uvx pget "machine learning AND medicine"
+uvx ppget "machine learning AND medicine"
 
 # Specify number of results
-uvx pget "COVID-19 vaccine" -l 50
+uvx ppget "COVID-19 vaccine" -l 50
 
 # Save as JSON
-uvx pget "cancer immunotherapy" -f json
+uvx ppget "cancer immunotherapy" -f json
 ```
 
 ### Install and use
@@ -37,13 +37,13 @@ For frequent use, you can install it:
 
 ```bash
 # Install with pip
-pip install pget
+pip install ppget
 
 # Install with uv
-uv tool install pget
+uv tool install ppget
 
 # Run
-pget "your search query"
+ppget "your search query"
 ```
 
 ## 📖 Usage
@@ -52,7 +52,7 @@ pget "your search query"
 
 ```bash
 # Simple search (CSV format by default, up to 100 results)
-pget "diabetes treatment"
+ppget "diabetes treatment"
 
 # Example output:
 # Searching PubMed...
@@ -66,7 +66,7 @@ pget "diabetes treatment"
 ### Options
 
 ```bash
-pget [query] [options]
+ppget [query] [options]
 
 Required:
   query                 Search query
@@ -87,30 +87,30 @@ Options:
 
 ```bash
 # Retrieve up to 200 results
-pget "machine learning healthcare" -l 200
+ppget "machine learning healthcare" -l 200
 ```
 
 #### 2. Specify output format
 
 ```bash
 # Save as JSON
-pget "spine surgery" -f json
+ppget "spine surgery" -f json
 
 # Default is CSV (can be opened in Excel)
-pget "orthopedics" -f csv
+ppget "orthopedics" -f csv
 ```
 
 #### 3. Specify filename
 
 ```bash
 # Specify file path directly
-pget "cancer research" -o results/cancer_papers.csv
+ppget "cancer research" -o results/cancer_papers.csv
 
 # Specify directory (filename is auto-generated)
-pget "neuroscience" -o ./data/
+ppget "neuroscience" -o ./data/
 
 # Extension determines format
-pget "cardiology" -o heart_disease.json
+ppget "cardiology" -o heart_disease.json
 ```
 
 #### 4. Specify email address (API rate limit relaxation)
@@ -118,29 +118,29 @@ pget "cardiology" -o heart_disease.json
 NCBI's API has relaxed limits when you provide an email address:
 
 ```bash
-pget "genomics" -e your.email@example.com -l 500
+ppget "genomics" -e your.email@example.com -l 500
 ```
 
 #### 5. Use PubMed search syntax
 
 ```bash
 # AND search
-pget "machine learning AND radiology"
+ppget "machine learning AND radiology"
 
 # OR search
-pget "COVID-19 OR SARS-CoV-2"
+ppget "COVID-19 OR SARS-CoV-2"
 
 # MeSH term search
-pget "Diabetes Mellitus[MeSH] AND Drug Therapy[MeSH]"
+ppget "Diabetes Mellitus[MeSH] AND Drug Therapy[MeSH]"
 
 # Filter by year
-pget "cancer immunotherapy AND 2024[PDAT]"
+ppget "cancer immunotherapy AND 2024[PDAT]"
 
 # Search by author
-pget "Smith J[Author]"
+ppget "Smith J[Author]"
 
 # Complex search
-pget "(machine learning OR deep learning) AND (radiology OR imaging) AND 2023:2024[PDAT]"
+ppget "(machine learning OR deep learning) AND (radiology OR imaging) AND 2023:2024[PDAT]"
 ```
 
 ## 📁 Output Format
@@ -193,7 +193,7 @@ Data File: pubmed_20251018_143022.json
 
 ## 🆚 Comparison with EDirect
 
-| Feature | pget | EDirect |
+| Feature | ppget | EDirect |
 |---------|------|---------|
 | Installation | Not required (`uvx` instant run) | Complex setup required |
 | Ease of use | Single command | Multiple command combinations |
@@ -210,11 +210,11 @@ efetch -format abstract | \
 xtract -pattern PubmedArticle -element MedlineCitation/PMID,ArticleTitle
 ```
 
-### pget example (simple)
+### ppget example (simple)
 
 ```bash
-# With pget, just one command
-pget "machine learning"
+# With ppget, just one command
+ppget "machine learning"
 ```
 
 ## 💡 Use Cases
@@ -223,18 +223,18 @@ pget "machine learning"
 
 ```bash
 # Collect latest papers on a specific topic
-pget "CRISPR gene editing" -l 100 -o crispr_papers.csv
+ppget "CRISPR gene editing" -l 100 -o crispr_papers.csv
 
 # Run multiple searches at once
-pget "diabetes treatment 2024[PDAT]" -o diabetes_2024.csv
-pget "cancer immunotherapy 2024[PDAT]" -o cancer_2024.csv
+ppget "diabetes treatment 2024[PDAT]" -o diabetes_2024.csv
+ppget "cancer immunotherapy 2024[PDAT]" -o cancer_2024.csv
 ```
 
 ### For data analysis
 
 ```bash
 # Retrieve in JSON format and analyze with Python
-pget "artificial intelligence healthcare" -f json -l 500 -o ai_health.json
+ppget "artificial intelligence healthcare" -f json -l 500 -o ai_health.json
 
 # Example Python code to read
 import json
@@ -247,14 +247,14 @@ with open('ai_health.json') as f:
 
 ```bash
 # Retrieve in CSV and manage in Excel
-pget "systematic review AND meta-analysis" -l 200 -o reviews.csv
+ppget "systematic review AND meta-analysis" -l 200 -o reviews.csv
 
 # → Open in Excel and review titles and abstracts
 ```
 
 ## 🤝 Contributing
 
-Bug reports and feature requests are welcome at [Issues](https://github.com/masaki39/pget/issues).
+Bug reports and feature requests are welcome at [Issues](https://github.com/masaki39/ppget/issues).
 
 ## 📄 License
 
@@ -269,5 +269,5 @@ This tool uses [pymed-paperscraper](https://github.com/nils-herrmann/pymed-paper
 **Start searching PubMed easily and quickly!**
 
 ```bash
-uvx pget "your research topic"
+uvx ppget "your research topic"
 ```
