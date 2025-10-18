@@ -1,6 +1,6 @@
 [project]
 name = "ppget"
-version = "0.1.1"
+version = "0.1.2"
 description = "A simple CLI tool to download PubMed articles without the complexity of EDirect"
 readme = "README.md"
 requires-python = ">=3.12"

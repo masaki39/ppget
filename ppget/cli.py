@@ -11,6 +11,46 @@ from pymed_paperscraper import PubMed
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
+def extract_abstract_from_xml(xml_element) -> str | None:
+    """
+    Extract abstract text directly from XML element.
+
+    This function handles cases where pymed-paperscraper fails to extract
+    the abstract due to nested HTML tags (e.g., <i>, <b>) within AbstractText.
+
+    Args:
+        xml_element: XML element from the PubMed article
+
+    Returns:
+        Complete abstract text, or None if not found
+    """
+    if xml_element is None:
+        return None
+
+    # Find all AbstractText elements
+    abstract_elements = xml_element.findall(".//AbstractText")
+    if not abstract_elements:
+        return None
+
+    # Extract text including nested elements using itertext()
+    texts = []
+    for elem in abstract_elements:
+        # Get label if exists (e.g., BACKGROUND, METHODS, RESULTS, CONCLUSIONS)
+        label = elem.get('Label')
+
+        # Get complete text including nested tags
+        text = ''.join(elem.itertext()).strip()
+
+        if text:
+            # Add label prefix if exists
+            if label:
+                texts.append(f"{label}: {text}")
+            else:
+                texts.append(text)
+
+    return '\n'.join(texts) if texts else None
+
+
 def search_pubmed(query: str, max_results: int = 100, email: str = "anonymous@example.com", quiet: bool = False) -> list[dict]:
     """
     Search PubMed and retrieve article data.
@@ -35,11 +75,25 @@ def search_pubmed(query: str, max_results: int = 100, email: str = "anonymous@ex
         doi_raw = getattr(article, 'doi', None)
         doi = doi_raw.split('\n')[0] if doi_raw else None
 
+        # Get abstract from pymed-paperscraper
+        abstract = getattr(article, 'abstract', None)
+
+        # If abstract is missing or empty, try to extract from XML directly
+        # This handles cases where nested HTML tags prevent proper extraction
+        if not abstract:
+            xml_element = getattr(article, 'xml', None)
+            if xml_element is not None:
+                abstract = extract_abstract_from_xml(xml_element)
+                if abstract and not quiet:
+                    # Log when we successfully recover an abstract
+                    pubmed_id = getattr(article, 'pubmed_id', 'unknown')
+                    logging.debug(f"Recovered abstract from XML for PMID {pubmed_id}")
+
         # Use getattr with defaults to handle missing attributes
         article_data = {
             "pubmed_id": getattr(article, 'pubmed_id', None),
             "title": getattr(article, 'title', None),
-            "abstract": getattr(article, 'abstract', None),
+            "abstract": abstract,
             "keywords": getattr(article, 'keywords', None) or [],
             "journal": getattr(article, 'journal', None),
             "publication_date": str(article.publication_date) if getattr(article, 'publication_date', None) else None,
