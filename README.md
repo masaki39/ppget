@@ -262,7 +262,7 @@ MIT License - See [LICENSE](LICENSE) for details.
 
 ## 🙏 Acknowledgments
 
-This tool uses [pymed-paperscraper](https://github.com/nils-herrmann/pymed-paperscraper).
+This tool uses [pymed-paperscraper](https://github.com/jannisborn/pymed).
 
 ---
 
