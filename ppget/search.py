@@ -26,10 +26,20 @@ def search_pubmed(query: str, max_results: int = 100, email: str = "anonymous@ex
 
     Returns:
         List of article data dictionaries
+
+    Raises:
+        RuntimeError: If PubMed query fails
+        ValueError: If query is empty or invalid
     """
+    if not query or not query.strip():
+        raise ValueError("Search query cannot be empty")
+
     pubmed = PubMed(tool="ppget", email=email)
 
-    results = pubmed.query(query, max_results=max_results)
+    try:
+        results = pubmed.query(query, max_results=max_results)
+    except Exception as e:
+        raise RuntimeError(f"PubMed query failed: {e}") from e
 
     articles = []
     for article in results:

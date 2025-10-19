@@ -18,9 +18,18 @@ def save_to_json(data: list[dict], output_path: Path):
     Args:
         data: List of article data
         output_path: Output file path
+
+    Raises:
+        IOError: If file write fails
     """
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+    if not data:
+        raise ValueError("No data to save")
+
+    try:
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except IOError as e:
+        raise IOError(f"Failed to write JSON to {output_path}: {e}") from e
 
     return output_path
 
@@ -32,9 +41,12 @@ def save_to_csv(data: list[dict], output_path: Path):
     Args:
         data: List of article data
         output_path: Output file path
+
+    Raises:
+        IOError: If file write fails
     """
     if not data:
-        return output_path
+        raise ValueError("No data to save")
 
     # CSV field definitions
     fieldnames = [
@@ -48,31 +60,34 @@ def save_to_csv(data: list[dict], output_path: Path):
         "keywords",
     ]
 
-    with open(output_path, "w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
+    try:
+        with open(output_path, "w", encoding="utf-8", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
 
-        for article in data:
-            # Convert author list to string
-            authors_str = "; ".join([
-                f"{a.get('firstname', '')} {a.get('lastname', '')}".strip()
-                for a in article.get("authors", [])
-            ])
+            for article in data:
+                # Convert author list to string
+                authors_str = "; ".join([
+                    f"{a.get('firstname', '')} {a.get('lastname', '')}".strip()
+                    for a in article.get("authors", [])
+                ])
 
-            # Convert keyword list to string
-            keywords_str = "; ".join(article.get("keywords", []) or [])
+                # Convert keyword list to string
+                keywords_str = "; ".join(article.get("keywords", []) or [])
 
-            csv_row = {
-                "pubmed_id": article.get("pubmed_id"),
-                "title": article.get("title"),
-                "abstract": article.get("abstract"),
-                "journal": article.get("journal"),
-                "publication_date": article.get("publication_date"),
-                "doi": article.get("doi"),
-                "authors": authors_str,
-                "keywords": keywords_str,
-            }
-            writer.writerow(csv_row)
+                csv_row = {
+                    "pubmed_id": article.get("pubmed_id"),
+                    "title": article.get("title"),
+                    "abstract": article.get("abstract"),
+                    "journal": article.get("journal"),
+                    "publication_date": article.get("publication_date"),
+                    "doi": article.get("doi"),
+                    "authors": authors_str,
+                    "keywords": keywords_str,
+                }
+                writer.writerow(csv_row)
+    except IOError as e:
+        raise IOError(f"Failed to write CSV to {output_path}: {e}") from e
 
     return output_path
 
@@ -86,6 +101,9 @@ def save_metadata(query: str, retrieved_count: int, data_file_path: Path, search
         retrieved_count: Number of retrieved results
         data_file_path: Path to the data file
         search_date: Search date and time
+
+    Raises:
+        IOError: If file write fails
     """
     meta_content = f"""Query: {query}
 Search Date: {search_date}
@@ -94,8 +112,11 @@ Data File: {data_file_path.name}
 """
 
     meta_path = data_file_path.parent / f"{data_file_path.stem}.meta.txt"
-    with open(meta_path, "w", encoding="utf-8") as f:
-        f.write(meta_content)
+    try:
+        with open(meta_path, "w", encoding="utf-8") as f:
+            f.write(meta_content)
+    except IOError as e:
+        raise IOError(f"Failed to write metadata to {meta_path}: {e}") from e
 
     return meta_path
 

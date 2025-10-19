@@ -6,6 +6,7 @@ This module provides the main CLI entry point for the ppget tool.
 
 import argparse
 import logging
+import re
 import sys
 from datetime import datetime
 
@@ -14,6 +15,25 @@ from .output import save_to_json, save_to_csv, save_metadata, determine_output_p
 
 # Suppress debug logs from urllib3
 logging.getLogger("urllib3").setLevel(logging.WARNING)
+
+
+def validate_limit(limit: int) -> None:
+    """Validate the limit parameter."""
+    if limit <= 0:
+        raise ValueError("Limit must be a positive number")
+    if limit > 10000:
+        raise ValueError("Limit cannot exceed 10000 (API limitation)")
+
+
+def validate_email(email: str) -> None:
+    """Basic email validation."""
+    if email == "anonymous@example.com":
+        return  # Default value is OK
+
+    # Simple email pattern check
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    if not re.match(pattern, email):
+        raise ValueError(f"Invalid email format: {email}")
 
 
 def main():
@@ -66,6 +86,14 @@ def main():
 
     args = parser.parse_args()
 
+    # Validate inputs
+    try:
+        validate_limit(args.limit)
+        validate_email(args.email)
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
+
     # Start search
     if not args.quiet:
         print(f"Searching PubMed...")
@@ -101,11 +129,20 @@ def main():
             print(f"✓ Metadata saved to {meta_path}")
             print(f"\nSuccessfully downloaded {len(articles)} articles")
 
+    except KeyboardInterrupt:
+        print("\nSearch cancelled by user", file=sys.stderr)
+        return 130
     except ValueError as e:
         print(f"Error: {e}", file=sys.stderr)
         return 1
+    except IOError as e:
+        print(f"File error: {e}", file=sys.stderr)
+        return 1
     except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
+        print(f"Unexpected error: {e}", file=sys.stderr)
+        if not args.quiet:
+            import traceback
+            traceback.print_exc()
         return 1
 
     return 0
