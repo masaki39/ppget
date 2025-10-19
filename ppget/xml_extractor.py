@@ -98,6 +98,7 @@ def extract_article_doi_from_xml(xml_element) -> str | None:
 
     # Use specific path to get only article DOI, not reference DOIs
     # PubmedArticle/PubmedData/ArticleIdList contains the article's IDs
-    doi_element = xml_element.find(".//PubmedData/ArticleIdList/ArticleId[@IdType='doi']")
+    # Use ./ instead of .// to only search direct children, not nested references
+    doi_element = xml_element.find("./PubmedData/ArticleIdList/ArticleId[@IdType='doi']")
 
     return doi_element.text if doi_element is not None else None
