@@ -77,3 +77,27 @@ def extract_abstract_from_xml(xml_element) -> str | None:
                 texts.append(text)
 
     return '\n'.join(texts) if texts else None
+
+
+def extract_article_doi_from_xml(xml_element) -> str | None:
+    """
+    Extract article DOI directly from XML element.
+
+    This function extracts only the article's DOI, excluding reference DOIs.
+    It uses a specific XPath to target only the article's ArticleIdList,
+    similar to the fix in pymed-paperscraper PR #7 for PubMed ID extraction.
+
+    Args:
+        xml_element: XML element from the PubMed article
+
+    Returns:
+        Article DOI, or None if not found
+    """
+    if xml_element is None:
+        return None
+
+    # Use specific path to get only article DOI, not reference DOIs
+    # PubmedArticle/PubmedData/ArticleIdList contains the article's IDs
+    doi_element = xml_element.find(".//PubmedData/ArticleIdList/ArticleId[@IdType='doi']")
+
+    return doi_element.text if doi_element is not None else None

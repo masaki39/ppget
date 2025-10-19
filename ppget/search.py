@@ -7,7 +7,7 @@ with XML fallback for fields that may have parsing issues.
 
 from pymed_paperscraper import PubMed
 
-from .xml_extractor import extract_text_from_xml, extract_abstract_from_xml
+from .xml_extractor import extract_text_from_xml, extract_abstract_from_xml, extract_article_doi_from_xml
 
 
 def search_pubmed(query: str, max_results: int = 100, email: str = "anonymous@example.com", quiet: bool = False) -> list[dict]:
@@ -56,12 +56,12 @@ def search_pubmed(query: str, max_results: int = 100, email: str = "anonymous@ex
             if not journal:
                 journal = extract_text_from_xml(xml_element, ".//Journal/Title")
 
-            # DOI: Extract first one only (pymed-paperscraper includes reference DOIs)
+            # DOI: Extract article DOI only (excluding reference DOIs)
             if not doi_raw:
-                doi_raw = extract_text_from_xml(xml_element, ".//ArticleId[@IdType='doi']")
+                doi_raw = extract_article_doi_from_xml(xml_element)
 
-        # Clean up DOI (take only first line, ignore reference DOIs)
-        doi = doi_raw.split('\n')[0] if doi_raw else None
+        # Use DOI directly (extract_article_doi_from_xml returns single DOI)
+        doi = doi_raw
 
         # Build article data dictionary
         article_data = {
