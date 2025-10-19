@@ -86,6 +86,23 @@ def main():
 
     args = parser.parse_args()
 
+    # Auto-detect format from output file extension if not explicitly specified
+    format_explicitly_set = '--format' in sys.argv or '-f' in sys.argv
+    if args.output and not format_explicitly_set:
+        if args.output.endswith('.json'):
+            args.format = 'json'
+        elif args.output.endswith('.csv'):
+            args.format = 'csv'
+
+    # Validate format matches extension if both are specified
+    if args.output and format_explicitly_set:
+        if args.output.endswith('.json') and args.format != 'json':
+            print(f"Error: File extension '.json' doesn't match format '{args.format}'. Expected '.{args.format}'", file=sys.stderr)
+            return 1
+        elif args.output.endswith('.csv') and args.format != 'csv':
+            print(f"Error: File extension '.csv' doesn't match format '{args.format}'. Expected '.{args.format}'", file=sys.stderr)
+            return 1
+
     # Validate inputs
     try:
         validate_limit(args.limit)

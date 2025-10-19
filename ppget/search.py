@@ -66,9 +66,11 @@ def search_pubmed(query: str, max_results: int = 100, email: str = "anonymous@ex
             if not journal:
                 journal = extract_text_from_xml(xml_element, ".//Journal/Title")
 
-            # DOI: Extract article DOI only (excluding reference DOIs)
-            if not doi_raw:
-                doi_raw = extract_article_doi_from_xml(xml_element)
+            # DOI: Always prefer XML extraction to exclude reference DOIs
+            # pymed-paperscraper may include reference DOIs, so prioritize XML method
+            xml_doi = extract_article_doi_from_xml(xml_element)
+            if xml_doi:
+                doi_raw = xml_doi
 
         # Use DOI directly (extract_article_doi_from_xml returns single DOI)
         doi = doi_raw
