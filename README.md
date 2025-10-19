@@ -1,5 +1,7 @@
 # ppget
 
+![PyPI - Downloads](https://img.shields.io/pypi/dm/ppget)
+
 **A simple CLI tool to easily download PubMed articles**
 
 [日本語版README](README_ja.md) | [English](README.md)
