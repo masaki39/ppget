@@ -1,5 +1,8 @@
 # ppget
 
+[![PyPI Downloads](https://static.pepy.tech/personalized-badge/ppget?period=total&units=INTERNATIONAL_SYSTEM&left_color=GREY&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/ppget)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/ppget)
+
 **PubMed文献を簡単にダウンロードできるシンプルなCLIツール**
 
 [日本語版README](README_ja.md) | [English](README.md)
@@ -61,7 +64,7 @@ ppget "diabetes treatment"
 # Max results: 100
 # ✓ Found 100 articles
 # ✓ Saved 100 articles to pubmed_20251018_143022.csv
-# ✓ Metadata saved to pubmed_20251018_143022.meta.json
+# ✓ Metadata saved to pubmed_20251018_143022.meta.txt
 ```
 
 ### オプション一覧
@@ -146,11 +149,11 @@ ppget "(machine learning OR deep learning) AND (radiology OR imaging) AND 2023:2
 
 ### CSV形式（デフォルト）
 
-スプレッドシートで開きやすい形式です。同時にメタデータファイル（`.meta.json`）も生成されます。
+スプレッドシートで開きやすい形式です。同時にメタデータファイル（`.meta.txt`）も生成されます。
 
 ```
 pubmed_20251018_143022.csv          # 論文データ
-pubmed_20251018_143022.meta.json    # 検索メタデータ
+pubmed_20251018_143022.meta.txt     # 検索メタデータ
 ```
 
 **CSVの列：**
@@ -165,24 +168,25 @@ pubmed_20251018_143022.meta.json    # 検索メタデータ
 
 ### JSON形式
 
-プログラムで処理しやすい形式です。検索メタデータもファイル内に含まれます。
+プログラムで処理しやすい形式です。
 
 ```json
-{
-  "search_metadata": {
-    "query": "machine learning",
-    "search_date": "2025-10-18 14:30:22",
-    "retrieved_results": 100
-  },
-  "articles": [
-    {
-      "pubmed_id": "12345678",
-      "title": "...",
-      "abstract": "...",
-      ...
-    }
-  ]
-}
+[
+  {
+    "pubmed_id": "12345678",
+    "title": "...",
+    "abstract": "...",
+    ...
+  }
+]
+```
+
+**メタデータファイル (.meta.txt):**
+```
+Query: machine learning
+Search Date: 2025-10-18 14:30:22
+Retrieved Results: 100
+Data File: pubmed_20251018_143022.json
 ```
 
 ## 🆚 EDirectとの比較
@@ -234,7 +238,6 @@ ppget "artificial intelligence healthcare" -f json -l 500 -o ai_health.json
 import json
 with open('ai_health.json') as f:
     data = json.load(f)
-    articles = data['articles']
     # 分析処理...
 ```
 

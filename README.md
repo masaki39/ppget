@@ -1,5 +1,6 @@
 # ppget
 
+[![PyPI Downloads](https://static.pepy.tech/personalized-badge/ppget?period=total&units=INTERNATIONAL_SYSTEM&left_color=GREY&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/ppget)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/ppget)
 
 **A simple CLI tool to easily download PubMed articles**
