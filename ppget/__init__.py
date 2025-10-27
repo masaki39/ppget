@@ -2,4 +2,4 @@
 ppget - A simple CLI tool to download PubMed articles
 """
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"

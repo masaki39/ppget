@@ -45,6 +45,7 @@ def extract_abstract_from_xml(xml_element) -> str | None:
 
     This function handles structured abstracts with labels (BACKGROUND, METHODS, etc.)
     and nested HTML tags that pymed-paperscraper fails to extract correctly.
+    Newlines are replaced with spaces and multiple spaces are normalized to single spaces.
 
     Args:
         xml_element: XML element from the PubMed article
@@ -76,7 +77,14 @@ def extract_abstract_from_xml(xml_element) -> str | None:
             else:
                 texts.append(text)
 
-    return '\n'.join(texts) if texts else None
+    if not texts:
+        return None
+
+    # Join with space instead of newline, then normalize multiple spaces to single space
+    import re
+    combined = ' '.join(texts)
+    normalized = re.sub(r'\s+', ' ', combined).strip()
+    return normalized
 
 
 def extract_article_doi_from_xml(xml_element) -> str | None:

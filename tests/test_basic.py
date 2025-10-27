@@ -141,3 +141,68 @@ class TestXMLExtractor:
         """None XML element should return None."""
         result = extract_abstract_from_xml(None)
         assert result is None
+
+    def test_extract_abstract_normalizes_whitespace(self):
+        """Abstract extraction should normalize whitespace."""
+        from xml.etree import ElementTree as ET
+
+        # Test case 1: Multiple spaces
+        xml_str = """
+        <PubmedArticle>
+            <AbstractText>This  has   multiple    spaces.</AbstractText>
+        </PubmedArticle>
+        """
+        xml = ET.fromstring(xml_str)
+        result = extract_abstract_from_xml(xml)
+        assert result == "This has multiple spaces."
+
+    def test_extract_abstract_replaces_newlines_with_spaces(self):
+        """Abstract extraction should replace newlines with spaces."""
+        from xml.etree import ElementTree as ET
+
+        # Test case: Newlines in text
+        xml_str = """
+        <PubmedArticle>
+            <AbstractText>Line one
+Line two
+Line three.</AbstractText>
+        </PubmedArticle>
+        """
+        xml = ET.fromstring(xml_str)
+        result = extract_abstract_from_xml(xml)
+        assert result == "Line one Line two Line three."
+        assert '\n' not in result
+
+    def test_extract_abstract_structured_with_labels(self):
+        """Structured abstract with labels should be space-separated."""
+        from xml.etree import ElementTree as ET
+
+        xml_str = """
+        <PubmedArticle>
+            <AbstractText Label="BACKGROUND">This is
+background.</AbstractText>
+            <AbstractText Label="METHODS">These are methods.</AbstractText>
+        </PubmedArticle>
+        """
+        xml = ET.fromstring(xml_str)
+        result = extract_abstract_from_xml(xml)
+        assert result == "BACKGROUND: This is background. METHODS: These are methods."
+        assert '\n' not in result
+
+    def test_extract_abstract_mixed_whitespace(self):
+        """Abstract with tabs and newlines should be normalized."""
+        from xml.etree import ElementTree as ET
+
+        xml_str = """
+        <PubmedArticle>
+            <AbstractText>Word1	Word2
+Word3   Word4</AbstractText>
+        </PubmedArticle>
+        """
+        xml = ET.fromstring(xml_str)
+        result = extract_abstract_from_xml(xml)
+        assert result == "Word1 Word2 Word3 Word4"
+        assert '\n' not in result
+        assert '\t' not in result
+        # Verify no multiple spaces
+        assert '  ' not in result
