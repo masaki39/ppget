@@ -13,7 +13,11 @@ import csv
 
 from ppget.cli import validate_limit, validate_email
 from ppget.output import save_to_json, save_to_csv, determine_output_path
-from ppget.xml_extractor import extract_text_from_xml, extract_abstract_from_xml
+from ppget.xml_extractor import (
+    extract_text_from_xml,
+    extract_abstract_from_xml,
+    normalize_whitespace,
+)
 
 
 class TestValidation:
@@ -127,6 +131,52 @@ class TestOutput:
             custom_path = f"{tmpdir}/custom.csv"
             path = determine_output_path(custom_path, "csv")
             assert str(path) == custom_path
+
+
+class TestWhitespaceNormalization:
+    """Test whitespace normalization function."""
+
+    def test_normalize_whitespace_none(self):
+        """None input should return None."""
+        assert normalize_whitespace(None) is None
+
+    def test_normalize_whitespace_empty(self):
+        """Empty string should return None."""
+        assert normalize_whitespace("") is None
+        assert normalize_whitespace("   ") is None
+
+    def test_normalize_whitespace_newlines(self):
+        """Newlines should be replaced with spaces."""
+        text = "Line one\nLine two\nLine three"
+        result = normalize_whitespace(text)
+        assert result == "Line one Line two Line three"
+        assert '\n' not in result
+
+    def test_normalize_whitespace_multiple_spaces(self):
+        """Multiple spaces should be collapsed to single space."""
+        text = "Word1  Word2   Word3    Word4"
+        result = normalize_whitespace(text)
+        assert result == "Word1 Word2 Word3 Word4"
+        assert '  ' not in result
+
+    def test_normalize_whitespace_tabs(self):
+        """Tabs should be replaced with spaces."""
+        text = "Word1\tWord2\t\tWord3"
+        result = normalize_whitespace(text)
+        assert result == "Word1 Word2 Word3"
+        assert '\t' not in result
+
+    def test_normalize_whitespace_mixed(self):
+        """Mixed whitespace should be normalized."""
+        text = "Word1\n  Word2\t\nWord3   \n\nWord4"
+        result = normalize_whitespace(text)
+        assert result == "Word1 Word2 Word3 Word4"
+
+    def test_normalize_whitespace_leading_trailing(self):
+        """Leading and trailing whitespace should be stripped."""
+        text = "  \n\tText with spaces\t\n  "
+        result = normalize_whitespace(text)
+        assert result == "Text with spaces"
 
 
 class TestXMLExtractor:

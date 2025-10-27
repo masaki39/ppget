@@ -5,6 +5,26 @@ This module provides functions to extract text from PubMed XML elements,
 properly handling nested HTML tags that pymed-paperscraper fails to process.
 """
 
+import re
+
+
+def normalize_whitespace(text: str | None) -> str | None:
+    """
+    Normalize whitespace in text by replacing newlines with spaces
+    and collapsing multiple spaces into single spaces.
+
+    Args:
+        text: Input text to normalize, or None
+
+    Returns:
+        Normalized text with single spaces, or None if input is None
+    """
+    if not text:
+        return None
+    # Replace all whitespace (newlines, tabs, multiple spaces) with single space
+    normalized = re.sub(r'\s+', ' ', text).strip()
+    return normalized if normalized else None
+
 
 def extract_text_from_xml(xml_element, path: str, separator: str = "\n") -> str | None:
     """
@@ -80,11 +100,9 @@ def extract_abstract_from_xml(xml_element) -> str | None:
     if not texts:
         return None
 
-    # Join with space instead of newline, then normalize multiple spaces to single space
-    import re
+    # Join with space instead of newline, then normalize using shared function
     combined = ' '.join(texts)
-    normalized = re.sub(r'\s+', ' ', combined).strip()
-    return normalized
+    return normalize_whitespace(combined)
 
 
 def extract_article_doi_from_xml(xml_element) -> str | None:

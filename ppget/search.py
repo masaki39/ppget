@@ -7,7 +7,12 @@ with XML fallback for fields that may have parsing issues.
 
 from pymed_paperscraper import PubMed
 
-from .xml_extractor import extract_text_from_xml, extract_abstract_from_xml, extract_article_doi_from_xml
+from .xml_extractor import (
+    extract_text_from_xml,
+    extract_abstract_from_xml,
+    extract_article_doi_from_xml,
+    normalize_whitespace,
+)
 
 
 def search_pubmed(query: str, max_results: int = 100, email: str = "anonymous@example.com", quiet: bool = False) -> list[dict]:
@@ -61,6 +66,10 @@ def search_pubmed(query: str, max_results: int = 100, email: str = "anonymous@ex
             # Abstract: Handles structured abstracts and nested tags
             if not abstract:
                 abstract = extract_abstract_from_xml(xml_element)
+            else:
+                # Normalize pymed-extracted abstract to ensure consistent formatting
+                # (XML extraction already normalizes, pymed extraction doesn't)
+                abstract = normalize_whitespace(abstract)
 
             # Journal: Usually simple text, but check just in case
             if not journal:
