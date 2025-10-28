@@ -7,8 +7,8 @@ This document provides information for AI assistants (like Claude) and developer
 **ppget** is a simple CLI tool for downloading PubMed articles. Unlike EDirect, it provides an intuitive interface with CSV/JSON output support.
 
 - **Language**: Python 3.12+
-- **Package Manager**: uv/pip
-- **Testing**: pytest
+- **Package Manager**: uv (primary) / pip (alternative)
+- **Testing**: pytest (run with `uv run pytest`)
 - **Linting**: ruff
 - **Build**: hatchling
 - **Distribution**: PyPI
@@ -46,14 +46,13 @@ Handles extraction of text from PubMed XML elements. Key features:
   - Handles structured abstracts with labels (BACKGROUND, METHODS, etc.)
   - Preserves nested HTML tags content (italic, bold, etc.)
 
-- **`extract_article_doi_from_xml()`**: Extracts article DOI, excluding reference DOIs
-
 - **`extract_text_from_xml()`**: Generic XML text extraction utility
 
 ### 2. Search Functionality (`ppget/search.py`)
 
-- Uses `pymed-paperscraper` for PubMed API access
-- Falls back to XML extraction for complex fields
+- Uses `pymed-paperscraper>=1.0.5` for PubMed API access
+- Falls back to XML extraction for complex fields (abstract, title, journal)
+- DOI extraction directly from pymed-paperscraper (no XML fallback needed since v1.0.5)
 - Returns structured article data as list of dictionaries
 
 ### 3. CLI Interface (`ppget/cli.py`)
@@ -73,18 +72,20 @@ Handles extraction of text from PubMed XML elements. Key features:
 
 ### 1. Install Dependencies
 
-```bash
-# Install with development dependencies
-pip install -e ".[dev]"
+**This project uses uv as the primary package manager.**
 
-# Or with uv
+```bash
+# Install with development dependencies (recommended - uv)
 uv pip install -e ".[dev]"
+
+# Alternative with pip
+pip install -e ".[dev]"
 ```
 
 ### 2. Install Pre-commit Hooks
 
 ```bash
-pip install pre-commit
+uv pip install pre-commit
 pre-commit install
 ```
 
@@ -94,18 +95,20 @@ This will automatically run:
 
 ### 3. Run Tests
 
+**IMPORTANT: This project uses uv - always run tests with `uv run pytest`**
+
 ```bash
-# Run all tests
-pytest
+# Run all tests (recommended)
+uv run pytest
 
 # Run with verbose output
-pytest -v
+uv run pytest -v
 
 # Run specific test file
-pytest tests/test_basic.py
+uv run pytest tests/test_basic.py
 
 # Run specific test
-pytest tests/test_basic.py::TestXMLExtractor::test_extract_abstract_normalizes_whitespace
+uv run pytest tests/test_basic.py::TestXMLExtractor::test_extract_abstract_normalizes_whitespace
 ```
 
 ## Running the Application
@@ -170,7 +173,7 @@ version = "0.1.5"  # Update this
 ### 2. Run Tests
 
 ```bash
-pytest
+uv run pytest
 ```
 
 All tests must pass before release.
@@ -234,7 +237,8 @@ You'll need PyPI credentials (API token recommended).
 ## Dependencies
 
 ### Runtime
-- `pymed-paperscraper>=1.0.4,<2.0.0`: PubMed API wrapper
+- `pymed-paperscraper>=1.0.5,<2.0.0`: PubMed API wrapper
+  - v1.0.5+ correctly excludes reference DOIs, eliminating need for XML fallback
 
 ### Development
 - `pytest>=7.0.0`: Testing framework

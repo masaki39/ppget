@@ -10,7 +10,6 @@ from pymed_paperscraper import PubMed
 from .xml_extractor import (
     extract_text_from_xml,
     extract_abstract_from_xml,
-    extract_article_doi_from_xml,
     normalize_whitespace,
 )
 
@@ -75,13 +74,8 @@ def search_pubmed(query: str, max_results: int = 100, email: str = "anonymous@ex
             if not journal:
                 journal = extract_text_from_xml(xml_element, ".//Journal/Title")
 
-            # DOI: Always prefer XML extraction to exclude reference DOIs
-            # pymed-paperscraper may include reference DOIs, so prioritize XML method
-            xml_doi = extract_article_doi_from_xml(xml_element)
-            if xml_doi:
-                doi_raw = xml_doi
-
-        # Use DOI directly (extract_article_doi_from_xml returns single DOI)
+        # Use DOI directly from pymed-paperscraper
+        # As of pymed-paperscraper 1.0.5, DOI extraction correctly excludes reference DOIs
         doi = doi_raw
 
         # Build article data dictionary

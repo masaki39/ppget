@@ -115,7 +115,7 @@ wheels = [
 
 [[package]]
 name = "ppget"
-version = "0.1.6"
+version = "0.1.7"
 source = { editable = "." }
 dependencies = [
     { name = "pymed-paperscraper" },
@@ -129,7 +129,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "pymed-paperscraper", specifier = ">=1.0.4,<2.0.0" },
+    { name = "pymed-paperscraper", specifier = ">=1.0.5,<2.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1.0" },
 ]
@@ -146,15 +146,15 @@ wheels = [
 
 [[package]]
 name = "pymed-paperscraper"
-version = "1.0.4"
+version = "1.0.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "requests" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4a/42/4198169379590994acd295208f3b887124bc8aa2936a3bbe09419e0dd24a/pymed_paperscraper-1.0.4.tar.gz", hash = "sha256:ba20817714bce3b24bad96dfe2c1bb092f4fc091b9044a8cc636198020795655", size = 259046 }
+sdist = { url = "https://files.pythonhosted.org/packages/20/67/33cd8402df1f0f057109a0e6d1271dc7d693d944f392df5f4110ca189470/pymed_paperscraper-1.0.5.tar.gz", hash = "sha256:adc5dd21af979f5bda280b4f8879db3dfd71ac6153f5269112efd97c7ac13336", size = 259085 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/52/3a/0e0c97b4341a375a5b7b98a0ca15608391a1581f0d49cf1c8138eb1c288b/pymed_paperscraper-1.0.4-py3-none-any.whl", hash = "sha256:e32b2e030334dfc931c6c47ac9d856b43cd19b9ac2b886cb5eb0a7216d940523", size = 11073 },
+    { url = "https://files.pythonhosted.org/packages/d8/1a/c9e5d98288fdef6f936c76e908332a7fd675b2920c821727586d00fe343a/pymed_paperscraper-1.0.5-py3-none-any.whl", hash = "sha256:4c2a5bf027c5708eedd279791468d5e5ce760cb50616372b450ff11c3ace6be0", size = 11113 },
 ]
 
 [[package]]
