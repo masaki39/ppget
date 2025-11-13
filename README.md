@@ -1,13 +1,12 @@
 # ppget
 
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/ppget?period=total&units=INTERNATIONAL_SYSTEM&left_color=GREY&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/ppget)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/ppget)
 
 **A simple CLI tool to easily download PubMed articles**
 
 [日本語版README](README_ja.md) | [English](README.md)
 
-`ppget` is a command-line tool for searching and downloading literature data from PubMed. Unlike [EDirect](https://www.ncbi.nlm.nih.gov/books/NBK179288/), which requires complex setup, **you can start using it immediately**.
+`ppget` is a command-line tool for searching and downloading literature data from PubMed. It focuses on being easy to run immediately: no multi-step pipelines, just one command that delivers CSV/JSON plus metadata.
 
 ## ✨ Features
 
@@ -72,7 +71,7 @@ ppget "diabetes treatment"
 ppget [query] [options]
 
 Required:
-  query                 Search query
+  query                 Search query (wrap in quotes only when the query contains spaces or shell-special characters)
 
 Options:
   -l, --limit          Maximum number of results (default: 100)
@@ -116,9 +115,9 @@ ppget "neuroscience" -o ./data/
 ppget "cardiology" -o heart_disease.json
 ```
 
-#### 4. Specify email address (API rate limit relaxation)
+#### 4. Specify email address (recommended for heavy usage)
 
-NCBI's API has relaxed limits when you provide an email address:
+NCBI requests a contact email for tools that access the E-utilities API. Providing one helps them reach you about issues and may reduce rate-limiting for larger batches:
 
 ```bash
 ppget "genomics" -e your.email@example.com -l 500
@@ -159,6 +158,7 @@ pubmed_20251018_143022.meta.txt     # Search metadata
 
 **CSV columns:**
 - `pubmed_id` - PubMed ID
+- `pubmed_link` - Direct link to the PubMed article page
 - `title` - Title
 - `abstract` - Abstract
 - `journal` - Journal name
@@ -190,31 +190,10 @@ Retrieved Results: 100
 Data File: pubmed_20251018_143022.json
 ```
 
-## 🆚 Comparison with EDirect
+## ℹ️ Tips
 
-| Feature | ppget | EDirect |
-|---------|------|---------|
-| Installation | Not required (`uvx` instant run) | Complex setup required |
-| Ease of use | Single command | Multiple command combinations |
-| Output format | CSV/JSON | XML/Text |
-| Metadata | Automatic | Manual management |
-| Learning curve | Low | High |
-
-### EDirect example (complex)
-
-```bash
-# Search with EDirect (multiple steps required)
-esearch -db pubmed -query "machine learning" | \
-efetch -format abstract | \
-xtract -pattern PubmedArticle -element MedlineCitation/PMID,ArticleTitle
-```
-
-### ppget example (simple)
-
-```bash
-# With ppget, just one command
-ppget "machine learning"
-```
+- Quotes around the query are optional when it is a single token (e.g. `ppget diabetes`). Use quotes when the query contains spaces, parentheses, logical operators, or shell-special characters.
+- Add `-e your.email@example.com` if you plan to run many requests or large limits. It identifies your tool to NCBI and can keep you within their published rate limits (default 3 req/sec without email, up to 10 req/sec with email & api key).
 
 ## 💡 Use Cases
 

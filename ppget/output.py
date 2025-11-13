@@ -51,6 +51,7 @@ def save_to_csv(data: list[dict], output_path: Path):
     # CSV field definitions
     fieldnames = [
         "pubmed_id",
+        "pubmed_link",
         "title",
         "abstract",
         "journal",
@@ -66,6 +67,11 @@ def save_to_csv(data: list[dict], output_path: Path):
             writer.writeheader()
 
             for article in data:
+                # Add PubMed link
+                pubmed_id = article.get("pubmed_id")
+                pubmed_id_str = str(pubmed_id) if pubmed_id else ""
+                pubmed_link = f"https://pubmed.ncbi.nlm.nih.gov/{pubmed_id_str}" if pubmed_id_str else ""
+
                 # Convert author list to string
                 authors_str = "; ".join([
                     f"{a.get('firstname', '')} {a.get('lastname', '')}".strip()
@@ -76,7 +82,8 @@ def save_to_csv(data: list[dict], output_path: Path):
                 keywords_str = "; ".join(article.get("keywords", []) or [])
 
                 csv_row = {
-                    "pubmed_id": article.get("pubmed_id"),
+                    "pubmed_id": pubmed_id_str,
+                    "pubmed_link": pubmed_link,
                     "title": article.get("title"),
                     "abstract": article.get("abstract"),
                     "journal": article.get("journal"),

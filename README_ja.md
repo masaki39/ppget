@@ -1,14 +1,12 @@
 # ppget
 
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/ppget?period=total&units=INTERNATIONAL_SYSTEM&left_color=GREY&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/ppget)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/ppget)
 
 **PubMed文献を簡単にダウンロードできるシンプルなCLIツール**
 
 [日本語版README](README_ja.md) | [English](README.md)
 
-`ppget` は、PubMedから文献データを検索・ダウンロードするためのコマンドラインツールです。
-[EDirect](https://www.ncbi.nlm.nih.gov/books/NBK179288/)のような複雑な設定は不要で、**すぐに使い始められます**。
+`ppget` は、PubMedから文献データを検索・ダウンロードするためのコマンドラインツールです。1コマンドでCSV/JSONとメタデータまで出力でき、面倒なセットアップは不要です。
 
 ## ✨ 特徴
 
@@ -73,7 +71,7 @@ ppget "diabetes treatment"
 ppget [検索クエリ] [オプション]
 
 必須引数:
-  query                 検索クエリ
+  query                 検索クエリ（スペースや記号を含まない単語だけなら引用符は不要）
 
 オプション:
   -l, --limit          最大取得件数（デフォルト: 100）
@@ -115,9 +113,9 @@ ppget "neuroscience" -o ./data/
 ppget "cardiology" -o heart_disease.json
 ```
 
-#### 4. メールアドレスを指定（API制限緩和）
+#### 4. メールアドレスを指定（多量取得時に推奨）
 
-NCBIのAPIは、メールアドレスを指定すると制限が緩和されます：
+NCBIのE-utilities APIは、連絡先としてメールアドレスを指定するよう求めています。負荷が高い利用時でも連絡が取れるようにする目的で、指定するとレート制限が緩和されやすくなります：
 
 ```bash
 ppget "genomics" -e your.email@example.com -l 500
@@ -158,6 +156,7 @@ pubmed_20251018_143022.meta.txt     # 検索メタデータ
 
 **CSVの列：**
 - `pubmed_id` - PubMed ID
+- `pubmed_link` - PubMed記事ページへのリンク
 - `title` - タイトル
 - `abstract` - 要旨
 - `journal` - ジャーナル名
@@ -189,31 +188,10 @@ Retrieved Results: 100
 Data File: pubmed_20251018_143022.json
 ```
 
-## 🆚 EDirectとの比較
+## ℹ️ Tips
 
-| 特徴 | ppget | EDirect |
-|------|------|---------|
-| インストール | 不要（`uvx`で即実行） | 複雑なセットアップが必要 |
-| 使いやすさ | 1コマンドで完結 | 複数コマンドの組み合わせ |
-| 出力形式 | CSV/JSON | XML/テキスト |
-| メタデータ | 自動保存 | 手動で管理 |
-| 学習コスト | 低い | 高い |
-
-### EDirectの例（複雑）
-
-```bash
-# EDirectでの検索（複数ステップが必要）
-esearch -db pubmed -query "machine learning" | \
-efetch -format abstract | \
-xtract -pattern PubmedArticle -element MedlineCitation/PMID,ArticleTitle
-```
-
-### ppgetの例（シンプル）
-
-```bash
-# ppgetなら1コマンド
-ppget "machine learning"
-```
+- クエリが単語1つなら引用符は不要です（例: `ppget diabetes`）。スペース・括弧・特殊文字を含む場合はシェルに解釈されないよう `"..."` で囲んでください。
+- 大量の検索をする場合は `-e your.email@example.com` を付けてください。NCBIの推奨に沿った利用となり、1秒あたりの許容リクエスト数も増やせます。
 
 ## 💡 使用例
 

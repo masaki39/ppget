@@ -86,7 +86,7 @@ class TestOutput:
                 save_to_json([], output_path)
 
     def test_save_to_csv(self):
-        """Test CSV file creation."""
+        """Test CSV file creation including PubMed link column."""
         test_data = [
             {
                 "pubmed_id": "12345",
@@ -110,7 +110,30 @@ class TestOutput:
                 rows = list(reader)
                 assert len(rows) == 1
                 assert rows[0]["pubmed_id"] == "12345"
+                assert rows[0]["pubmed_link"] == "https://pubmed.ncbi.nlm.nih.gov/12345"
                 assert rows[0]["title"] == "Test Article"
+                assert rows[0]["authors"] == "John Doe"
+                assert rows[0]["keywords"] == "test; article"
+
+    def test_save_to_csv_without_pubmed_id(self):
+        """Missing PubMed ID should produce empty ID/link fields."""
+        test_data = [
+            {
+                "title": "No ID Article",
+                "authors": [],
+                "keywords": [],
+            }
+        ]
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = Path(tmpdir) / "test_no_id.csv"
+            save_to_csv(test_data, output_path)
+
+            with open(output_path, encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                row = next(reader)
+                assert row["pubmed_id"] == ""
+                assert row["pubmed_link"] == ""
 
     def test_save_to_csv_empty_data(self):
         """Empty data should raise ValueError."""
