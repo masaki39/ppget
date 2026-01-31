@@ -22,7 +22,7 @@ def normalize_whitespace(text: str | None) -> str | None:
     if not text:
         return None
     # Replace all whitespace (newlines, tabs, multiple spaces) with single space
-    normalized = re.sub(r'\s+', ' ', text).strip()
+    normalized = re.sub(r"\s+", " ", text).strip()
     return normalized if normalized else None
 
 
@@ -52,7 +52,7 @@ def extract_text_from_xml(xml_element, path: str, separator: str = "\n") -> str 
     texts = []
     for elem in elements:
         # itertext() returns all text including nested elements
-        text = ''.join(elem.itertext()).strip()
+        text = "".join(elem.itertext()).strip()
         if text:
             texts.append(text)
 
@@ -85,10 +85,10 @@ def extract_abstract_from_xml(xml_element) -> str | None:
     texts = []
     for elem in abstract_elements:
         # Get label if exists (e.g., BACKGROUND, METHODS, RESULTS, CONCLUSIONS)
-        label = elem.get('Label')
+        label = elem.get("Label")
 
         # Get complete text including nested tags using itertext()
-        text = ''.join(elem.itertext()).strip()
+        text = "".join(elem.itertext()).strip()
 
         if text:
             # Add label prefix if exists for structured abstracts
@@ -101,5 +101,5 @@ def extract_abstract_from_xml(xml_element) -> str | None:
         return None
 
     # Join with space instead of newline, then normalize using shared function
-    combined = ' '.join(texts)
+    combined = " ".join(texts)
     return normalize_whitespace(combined)

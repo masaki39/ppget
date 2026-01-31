@@ -8,13 +8,15 @@ with XML fallback for fields that may have parsing issues.
 from pymed_paperscraper import PubMed
 
 from .xml_extractor import (
-    extract_text_from_xml,
     extract_abstract_from_xml,
+    extract_text_from_xml,
     normalize_whitespace,
 )
 
 
-def search_pubmed(query: str, max_results: int = 100, email: str = "anonymous@example.com", quiet: bool = False) -> list[dict]:
+def search_pubmed(
+    query: str, max_results: int = 100, email: str = "anonymous@example.com", quiet: bool = False
+) -> list[dict]:
     """
     Search PubMed and retrieve article data.
 
@@ -47,13 +49,13 @@ def search_pubmed(query: str, max_results: int = 100, email: str = "anonymous@ex
 
     articles = []
     for article in results:
-        xml_element = getattr(article, 'xml', None)
+        xml_element = getattr(article, "xml", None)
 
         # Extract all fields from pymed-paperscraper first
-        title = getattr(article, 'title', None)
-        abstract = getattr(article, 'abstract', None)
-        journal = getattr(article, 'journal', None)
-        doi_raw = getattr(article, 'doi', None)
+        title = getattr(article, "title", None)
+        abstract = getattr(article, "abstract", None)
+        journal = getattr(article, "journal", None)
+        doi_raw = getattr(article, "doi", None)
 
         # XML fallback for fields that may have nested HTML tags
         # This ensures we don't lose data due to pymed-paperscraper's parsing limitations
@@ -80,15 +82,19 @@ def search_pubmed(query: str, max_results: int = 100, email: str = "anonymous@ex
 
         # Build article data dictionary
         article_data = {
-            "pubmed_id": getattr(article, 'pubmed_id', None),
+            "pubmed_id": getattr(article, "pubmed_id", None),
             "title": title,
             "abstract": abstract,
-            "keywords": getattr(article, 'keywords', None) or [],
+            "keywords": getattr(article, "keywords", None) or [],
             "journal": journal,
-            "publication_date": str(article.publication_date) if getattr(article, 'publication_date', None) else None,
+            "publication_date": (
+                str(article.publication_date)
+                if getattr(article, "publication_date", None)
+                else None
+            ),
             "authors": [
                 {"firstname": author.get("firstname"), "lastname": author.get("lastname")}
-                for author in (getattr(article, 'authors', None) or [])
+                for author in (getattr(article, "authors", None) or [])
             ],
             "doi": doi,
         }

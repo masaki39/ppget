@@ -8,10 +8,11 @@ xml_extractorの実装が正しいかを確認します。
 
 import sys
 from xml.etree.ElementTree import tostring
+
 from pymed_paperscraper import PubMed
 
 # Add parent directory to path to import ppget modules
-sys.path.insert(0, '/Users/masaki/dev/ppget')
+sys.path.insert(0, "/Users/masaki/dev/ppget")
 from ppget.xml_extractor import extract_article_doi_from_xml
 
 
@@ -31,7 +32,7 @@ def print_element_tree(element, indent=0, max_depth=5):
 
     # テキストコンテンツを表示（最初の50文字まで）
     if element.text and element.text.strip():
-        text = element.text.strip()[:50].replace('\n', '\\n')
+        text = element.text.strip()[:50].replace("\n", "\\n")
         print(f"{prefix}  TEXT: {text}...")
 
     # 子要素を再帰的に表示
@@ -41,15 +42,15 @@ def print_element_tree(element, indent=0, max_depth=5):
 
 def inspect_xml_structure(pubmed_id: str):
     """指定されたPubMed IDの記事のXML構造を調査"""
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print(f"PubMed ID: {pubmed_id}")
-    print(f"{'='*80}\n")
+    print(f"{'=' * 80}\n")
 
     pubmed = PubMed(tool="ppget-test", email="test@example.com")
     results = pubmed.query(pubmed_id, max_results=1)
 
     for article in results:
-        xml_element = getattr(article, 'xml', None)
+        xml_element = getattr(article, "xml", None)
 
         if xml_element is None:
             print("ERROR: XML要素が取得できませんでした")
@@ -61,7 +62,9 @@ def inspect_xml_structure(pubmed_id: str):
         # pymed-paperscraperが取得したデータ
         print("\n--- PYMED-PAPERSCRAPER EXTRACTED DATA ---")
         print(f"Title: {getattr(article, 'title', None)}")
-        print(f"Abstract: {getattr(article, 'abstract', None)[:100] if getattr(article, 'abstract', None) else None}...")
+        abstract = getattr(article, "abstract", None)
+        abstract_preview = abstract[:100] if abstract else None
+        print(f"Abstract: {abstract_preview}...")
         print(f"Journal: {getattr(article, 'journal', None)}")
         print(f"DOI: {getattr(article, 'doi', None)}")
 
@@ -116,11 +119,13 @@ def inspect_xml_structure(pubmed_id: str):
         print("\n--- NEW DOI EXTRACTION FUNCTION TEST ---")
         extracted_doi = extract_article_doi_from_xml(xml_element)
         print(f"extract_article_doi_from_xml result: {extracted_doi}")
-        print(f"pymed-paperscraper DOI (first line): {getattr(article, 'doi', '').split(chr(10))[0] if getattr(article, 'doi', None) else None}")
+        doi_attr = getattr(article, "doi", "")
+        first_line_doi = doi_attr.split(chr(10))[0] if getattr(article, "doi", None) else None
+        print(f"pymed-paperscraper DOI (first line): {first_line_doi}")
 
         # Raw XML出力（デバッグ用）
         print("\n--- RAW XML (first 2000 chars) ---")
-        raw_xml = tostring(xml_element, encoding='unicode')
+        raw_xml = tostring(xml_element, encoding="unicode")
         print(raw_xml[:2000])
 
         break  # 最初の1件のみ処理
@@ -150,7 +155,7 @@ def main():
         for pubmed_id, description in test_cases:
             print(f"\nTest case: {description}")
             inspect_xml_structure(pubmed_id)
-            print("\n" + "="*80 + "\n")
+            print("\n" + "=" * 80 + "\n")
 
 
 if __name__ == "__main__":

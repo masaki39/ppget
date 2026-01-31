@@ -5,17 +5,18 @@ These tests verify core functionality without requiring actual PubMed API calls.
 Run with: pytest
 """
 
-import pytest
-from pathlib import Path
-import tempfile
-import json
 import csv
+import json
+import tempfile
+from pathlib import Path
 
-from ppget.cli import validate_limit, validate_email
-from ppget.output import save_to_json, save_to_csv, determine_output_path
+import pytest
+
+from ppget.cli import validate_email, validate_limit
+from ppget.output import determine_output_path, save_to_csv, save_to_json
 from ppget.xml_extractor import (
-    extract_text_from_xml,
     extract_abstract_from_xml,
+    extract_text_from_xml,
     normalize_whitespace,
 )
 
@@ -65,9 +66,7 @@ class TestOutput:
 
     def test_save_to_json(self):
         """Test JSON file creation."""
-        test_data = [
-            {"pubmed_id": "12345", "title": "Test Article", "abstract": "Test abstract"}
-        ]
+        test_data = [{"pubmed_id": "12345", "title": "Test Article", "abstract": "Test abstract"}]
 
         with tempfile.TemporaryDirectory() as tmpdir:
             output_path = Path(tmpdir) / "test.json"
@@ -173,21 +172,21 @@ class TestWhitespaceNormalization:
         text = "Line one\nLine two\nLine three"
         result = normalize_whitespace(text)
         assert result == "Line one Line two Line three"
-        assert '\n' not in result
+        assert "\n" not in result
 
     def test_normalize_whitespace_multiple_spaces(self):
         """Multiple spaces should be collapsed to single space."""
         text = "Word1  Word2   Word3    Word4"
         result = normalize_whitespace(text)
         assert result == "Word1 Word2 Word3 Word4"
-        assert '  ' not in result
+        assert "  " not in result
 
     def test_normalize_whitespace_tabs(self):
         """Tabs should be replaced with spaces."""
         text = "Word1\tWord2\t\tWord3"
         result = normalize_whitespace(text)
         assert result == "Word1 Word2 Word3"
-        assert '\t' not in result
+        assert "\t" not in result
 
     def test_normalize_whitespace_mixed(self):
         """Mixed whitespace should be normalized."""
@@ -244,7 +243,7 @@ Line three.</AbstractText>
         xml = ET.fromstring(xml_str)
         result = extract_abstract_from_xml(xml)
         assert result == "Line one Line two Line three."
-        assert '\n' not in result
+        assert "\n" not in result
 
     def test_extract_abstract_structured_with_labels(self):
         """Structured abstract with labels should be space-separated."""
@@ -260,7 +259,7 @@ background.</AbstractText>
         xml = ET.fromstring(xml_str)
         result = extract_abstract_from_xml(xml)
         assert result == "BACKGROUND: This is background. METHODS: These are methods."
-        assert '\n' not in result
+        assert "\n" not in result
 
     def test_extract_abstract_mixed_whitespace(self):
         """Abstract with tabs and newlines should be normalized."""
@@ -275,7 +274,7 @@ Word3   Word4</AbstractText>
         xml = ET.fromstring(xml_str)
         result = extract_abstract_from_xml(xml)
         assert result == "Word1 Word2 Word3 Word4"
-        assert '\n' not in result
-        assert '\t' not in result
+        assert "\n" not in result
+        assert "\t" not in result
         # Verify no multiple spaces
-        assert '  ' not in result
+        assert "  " not in result

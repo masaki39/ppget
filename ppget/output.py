@@ -5,8 +5,8 @@ This module provides functions to save article data in various formats
 (JSON, CSV) and manage output file paths.
 """
 
-import json
 import csv
+import json
 from datetime import datetime
 from pathlib import Path
 
@@ -70,13 +70,17 @@ def save_to_csv(data: list[dict], output_path: Path):
                 # Add PubMed link
                 pubmed_id = article.get("pubmed_id")
                 pubmed_id_str = str(pubmed_id) if pubmed_id else ""
-                pubmed_link = f"https://pubmed.ncbi.nlm.nih.gov/{pubmed_id_str}" if pubmed_id_str else ""
+                pubmed_link = (
+                    f"https://pubmed.ncbi.nlm.nih.gov/{pubmed_id_str}" if pubmed_id_str else ""
+                )
 
                 # Convert author list to string
-                authors_str = "; ".join([
-                    f"{a.get('firstname', '')} {a.get('lastname', '')}".strip()
-                    for a in article.get("authors", [])
-                ])
+                authors_str = "; ".join(
+                    [
+                        f"{a.get('firstname', '')} {a.get('lastname', '')}".strip()
+                        for a in article.get("authors", [])
+                    ]
+                )
 
                 # Convert keyword list to string
                 keywords_str = "; ".join(article.get("keywords", []) or [])
@@ -146,7 +150,7 @@ def validate_output_path(output_arg: str, format: str) -> Path:
 
     # If it has an extension, validate it
     if output_path.suffix:
-        allowed_extensions = {'.csv', '.json'}
+        allowed_extensions = {".csv", ".json"}
         if output_path.suffix.lower() not in allowed_extensions:
             raise ValueError(
                 f"Invalid file extension '{output_path.suffix}'. "

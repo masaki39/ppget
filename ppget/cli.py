@@ -10,8 +10,8 @@ import re
 import sys
 from datetime import datetime
 
+from .output import determine_output_path, save_metadata, save_to_csv, save_to_json
 from .search import search_pubmed
-from .output import save_to_json, save_to_csv, save_metadata, determine_output_path
 
 # Suppress debug logs from urllib3
 logging.getLogger("urllib3").setLevel(logging.WARNING)
@@ -31,7 +31,7 @@ def validate_email(email: str) -> None:
         return  # Default value is OK
 
     # Simple email pattern check
-    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     if not re.match(pattern, email):
         raise ValueError(f"Invalid email format: {email}")
 
@@ -39,68 +39,75 @@ def validate_email(email: str) -> None:
 def main():
     from ppget import __version__
 
-    parser = argparse.ArgumentParser(
-        description="A simple CLI tool to download PubMed articles"
+    parser = argparse.ArgumentParser(description="A simple CLI tool to download PubMed articles")
+    parser.add_argument(
+        "query", type=str, help="Search query (e.g., 'machine learning AND medicine')"
     )
     parser.add_argument(
-        "query",
-        type=str,
-        help="Search query (e.g., 'machine learning AND medicine')"
-    )
-    parser.add_argument(
-        "-l", "--limit",
+        "-l",
+        "--limit",
         type=int,
         default=100,
-        help="Maximum number of results to retrieve (default: 100)"
+        help="Maximum number of results to retrieve (default: 100)",
     )
     parser.add_argument(
-        "-o", "--output",
+        "-o",
+        "--output",
         type=str,
         default=None,
-        help="Output file path or directory (default: current directory)"
+        help="Output file path or directory (default: current directory)",
     )
     parser.add_argument(
-        "-e", "--email",
+        "-e",
+        "--email",
         type=str,
         default="anonymous@example.com",
-        help="Email address for API rate limit relaxation (default: anonymous@example.com)"
+        help="Email address for API rate limit relaxation (default: anonymous@example.com)",
     )
     parser.add_argument(
-        "-f", "--format",
+        "-f",
+        "--format",
         type=str,
         choices=["csv", "json"],
         default="csv",
-        help="Output format (default: csv)"
+        help="Output format (default: csv)",
     )
     parser.add_argument(
-        "-q", "--quiet",
-        action="store_true",
-        help="Suppress progress messages (errors only)"
+        "-q", "--quiet", action="store_true", help="Suppress progress messages (errors only)"
     )
     parser.add_argument(
-        "-v", "--version",
+        "-v",
+        "--version",
         action="version",
         version=f"ppget {__version__}",
-        help="Show version and exit"
+        help="Show version and exit",
     )
 
     args = parser.parse_args()
 
     # Auto-detect format from output file extension if not explicitly specified
-    format_explicitly_set = '--format' in sys.argv or '-f' in sys.argv
+    format_explicitly_set = "--format" in sys.argv or "-f" in sys.argv
     if args.output and not format_explicitly_set:
-        if args.output.endswith('.json'):
-            args.format = 'json'
-        elif args.output.endswith('.csv'):
-            args.format = 'csv'
+        if args.output.endswith(".json"):
+            args.format = "json"
+        elif args.output.endswith(".csv"):
+            args.format = "csv"
 
     # Validate format matches extension if both are specified
     if args.output and format_explicitly_set:
-        if args.output.endswith('.json') and args.format != 'json':
-            print(f"Error: File extension '.json' doesn't match format '{args.format}'. Expected '.{args.format}'", file=sys.stderr)
+        if args.output.endswith(".json") and args.format != "json":
+            print(
+                f"Error: File extension '.json' doesn't match format "
+                f"'{args.format}'. Expected '.{args.format}'",
+                file=sys.stderr,
+            )
             return 1
-        elif args.output.endswith('.csv') and args.format != 'csv':
-            print(f"Error: File extension '.csv' doesn't match format '{args.format}'. Expected '.{args.format}'", file=sys.stderr)
+        elif args.output.endswith(".csv") and args.format != "csv":
+            print(
+                f"Error: File extension '.csv' doesn't match format "
+                f"'{args.format}'. Expected '.{args.format}'",
+                file=sys.stderr,
+            )
             return 1
 
     # Validate inputs
@@ -113,7 +120,7 @@ def main():
 
     # Start search
     if not args.quiet:
-        print(f"Searching PubMed...")
+        print("Searching PubMed...")
         print(f"Query: '{args.query}'")
         print(f"Max results: {args.limit}")
 
@@ -159,6 +166,7 @@ def main():
         print(f"Unexpected error: {e}", file=sys.stderr)
         if not args.quiet:
             import traceback
+
             traceback.print_exc()
         return 1
 
