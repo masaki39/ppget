@@ -44,11 +44,24 @@ def search_pubmed(
 
     try:
         results = pubmed.query(query, max_results=max_results)
+    except KeyboardInterrupt:
+        raise
     except Exception as e:
-        raise RuntimeError(f"PubMed query failed: {e}") from e
+        error_msg = str(e).lower()
+        # Provide more specific error messages for common issues
+        if 'timeout' in error_msg or 'timed out' in error_msg:
+            raise RuntimeError(
+                "PubMed query timed out. Try reducing --limit or check your network connection."
+            ) from e
+        elif 'connection' in error_msg or 'network' in error_msg:
+            raise RuntimeError(
+                f"Network error while querying PubMed: {e}"
+            ) from e
+        else:
+            raise RuntimeError(f"PubMed query failed: {e}") from e
 
     articles = []
-    for article in results:
+    for idx, article in enumerate(results, 1):
         xml_element = getattr(article, "xml", None)
 
         # Extract all fields from pymed-paperscraper first
@@ -78,7 +91,8 @@ def search_pubmed(
 
         # Use DOI directly from pymed-paperscraper
         # As of pymed-paperscraper 1.0.5, DOI extraction correctly excludes reference DOIs
-        doi = doi_raw
+        # Normalize by taking first line only (some DOIs contain newlines)
+        doi = doi_raw.split('\n')[0].strip() if doi_raw else None
 
         # Build article data dictionary
         article_data = {
@@ -99,5 +113,9 @@ def search_pubmed(
             "doi": doi,
         }
         articles.append(article_data)
+
+        # Show progress for large queries (every 100 articles)
+        if not quiet and idx % 100 == 0:
+            print(f"  Retrieved {idx} articles...", flush=True)
 
     return articles

@@ -77,8 +77,9 @@ def save_to_csv(data: list[dict], output_path: Path):
                 # Convert author list to string
                 authors_str = "; ".join(
                     [
-                        f"{a.get('firstname', '')} {a.get('lastname', '')}".strip()
+                        f"{a.get('firstname') or ''} {a.get('lastname') or ''}".strip()
                         for a in article.get("authors", [])
+                        if a.get('firstname') or a.get('lastname')
                     ]
                 )
 

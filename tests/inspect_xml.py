@@ -13,7 +13,8 @@ from pymed_paperscraper import PubMed
 
 # Add parent directory to path to import ppget modules
 sys.path.insert(0, "/Users/masaki/dev/ppget")
-from ppget.xml_extractor import extract_article_doi_from_xml
+# Note: extract_article_doi_from_xml is no longer used as pymed-paperscraper 1.0.5+
+# correctly handles DOI extraction
 
 
 def print_element_tree(element, indent=0, max_depth=5):
@@ -115,13 +116,15 @@ def inspect_xml_structure(pubmed_id: str):
         for i, elem in enumerate(all_article_ids):
             print(f"  [{i}] IdType: {elem.get('IdType')}, Text: {elem.text}")
 
-        # Test new extract_article_doi_from_xml function
-        print("\n--- NEW DOI EXTRACTION FUNCTION TEST ---")
-        extracted_doi = extract_article_doi_from_xml(xml_element)
-        print(f"extract_article_doi_from_xml result: {extracted_doi}")
+        # DOI extraction (using pymed-paperscraper 1.0.5+)
+        print("\n--- DOI EXTRACTION TEST ---")
         doi_attr = getattr(article, "doi", "")
-        first_line_doi = doi_attr.split(chr(10))[0] if getattr(article, "doi", None) else None
-        print(f"pymed-paperscraper DOI (first line): {first_line_doi}")
+        print(f"pymed-paperscraper DOI (raw): {doi_attr}")
+        # Check for newlines in DOI
+        if doi_attr and chr(10) in doi_attr:
+            first_line_doi = doi_attr.split(chr(10))[0]
+            print(f"DOI (first line only): {first_line_doi}")
+            print("WARNING: DOI contains newline characters")
 
         # Raw XML出力（デバッグ用）
         print("\n--- RAW XML (first 2000 chars) ---")
