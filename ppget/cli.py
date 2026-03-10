@@ -36,10 +36,22 @@ def validate_email(email: str) -> None:
         raise ValueError(f"Invalid email format: {email}")
 
 
+class _Formatter(argparse.HelpFormatter):
+    def _format_action_invocation(self, action):
+        if not action.option_strings or action.nargs == 0:
+            return super()._format_action_invocation(action)
+        default = self._get_default_metavar_for_optional(action)
+        args_string = self._format_args(action, default)
+        return ", ".join(action.option_strings) + " " + args_string
+
+
 def main():
     from ppget import __version__
 
-    parser = argparse.ArgumentParser(description="A simple CLI tool to download PubMed articles")
+    parser = argparse.ArgumentParser(
+        description="A simple CLI tool to download PubMed articles",
+        formatter_class=lambda prog: _Formatter(prog, max_help_position=36, width=100),
+    )
     parser.add_argument(
         "query", type=str, help="Search query (e.g., 'machine learning AND medicine')"
     )
